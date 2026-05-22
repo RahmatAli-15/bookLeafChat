@@ -1,5 +1,4 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Activity, Database, ShieldAlert, Sparkles } from "lucide-react";
 import ChatWindow from "../components/ChatWindow";
 import WorkflowTracePanel from "../components/WorkflowTracePanel";
 import { sendChatQuery } from "../services/api";
@@ -74,16 +73,7 @@ async function streamText(fullText, onTick) {
   }
 }
 
-function StatusPill({ icon: Icon, label, active }) {
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-semibold ${active ? "bg-emerald-100 text-emerald-700" : "bg-slate-200 text-slate-600"}`}>
-      <Icon size={12} />
-      {label}
-    </span>
-  );
-}
-
-function ChatPage({ onResolved, pushToast, health }) {
+function ChatPage({ onResolved, pushToast }) {
   const [activeChannel, setActiveChannel] = useState(CHANNELS[0]);
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -427,12 +417,6 @@ function ChatPage({ onResolved, pushToast, health }) {
         <div>
           <h2 className="text-2xl font-semibold">AI Support Command Center</h2>
           <p className="text-sm text-slate-500">{multiTurnHint}</p>
-        </div>
-        <div className="flex flex-wrap gap-1.5">
-          <StatusPill icon={Sparkles} label="AI Active" active={health?.ai_active ?? true} />
-          <StatusPill icon={Database} label="DB Connected" active={health?.db_connected ?? false} />
-          <StatusPill icon={Activity} label="RAG Enabled" active={health?.rag_enabled ?? true} />
-          <StatusPill icon={ShieldAlert} label="Escalation Monitoring" active={health?.escalation_monitoring_enabled ?? true} />
         </div>
       </div>
 
