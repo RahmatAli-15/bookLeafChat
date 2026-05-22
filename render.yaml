@@ -27,7 +27,6 @@ services:
     name: bookleaf-frontend
     runtime: static
     rootDir: frontend
-    plan: starter
     buildCommand: npm install && npm run build
     staticPublishPath: dist
     autoDeploy: true
