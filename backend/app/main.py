@@ -43,10 +43,13 @@ async def lifespan(_: FastAPI):
 def create_app() -> FastAPI:
     app = FastAPI(title=settings.APP_NAME, lifespan=lifespan)
     allowed_origins = [origin.strip() for origin in settings.FRONTEND_ORIGIN.split(",") if origin.strip()]
+    # Render preview/renamed frontends can change hostnames; keep CORS resilient for onrender domains.
+    render_origin_regex = r"^https://([a-zA-Z0-9-]+\.)?onrender\.com$"
 
     app.add_middleware(
         CORSMiddleware,
         allow_origins=allowed_origins or ["http://localhost:5173"],
+        allow_origin_regex=render_origin_regex,
         allow_credentials=True,
         allow_methods=["*"],
         allow_headers=["*"],
