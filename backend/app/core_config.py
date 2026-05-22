@@ -15,7 +15,7 @@ class Settings(BaseSettings):
     GROQ_API_KEY: str = ""
     GROQ_MODEL: str = "llama-3.3-70b-versatile"
 
-    @field_validator("DATABASE_URL", "GROQ_API_KEY", mode="before")
+    @field_validator("DATABASE_URL", "GROQ_API_KEY", "FRONTEND_ORIGIN", mode="before")
     @classmethod
     def strip_optional_quotes(cls, value: str | None) -> str:
         if value is None:
