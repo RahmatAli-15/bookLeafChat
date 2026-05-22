@@ -112,7 +112,7 @@ function ChatWindow({
         {isLoading && <TypingIndicator />}
       </div>
 
-      <form onSubmit={onSend} className="sticky bottom-0 z-10 flex items-center gap-2 rounded-xl bg-white/95 p-1 backdrop-blur">
+      <form onSubmit={onSend} autoComplete="off" className="sticky bottom-0 z-10 flex items-center gap-2 rounded-xl bg-white/95 p-1 backdrop-blur">
         <button
           type="button"
           onClick={isListening ? onVoiceStop : onVoiceStart}
@@ -127,9 +127,11 @@ function ChatWindow({
           {isListening ? <MicOff size={16} /> : <Mic size={16} />}
         </button>
         <input
+          name="support-reply-input"
           value={draft}
           onChange={(e) => setDraft(e.target.value)}
           placeholder={`Reply as ${activeChannel} support...`}
+          autoComplete="off"
           className="flex-1 rounded-xl border border-slate-200 px-3.5 py-2 text-sm outline-none transition-all ring-leaf-500 placeholder:text-slate-400 focus:ring"
           disabled={isLoading}
         />

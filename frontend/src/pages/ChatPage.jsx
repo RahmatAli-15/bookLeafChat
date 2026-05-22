@@ -23,6 +23,19 @@ function withId(message) {
   return { id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, ...message };
 }
 
+function sanitizeTranscript(text) {
+  const normalized = (text || "").replace(/\s+/g, " ").trim();
+  if (!normalized) return "";
+  const words = normalized.split(" ");
+  const compact = [];
+  for (const word of words) {
+    if (!compact.length || compact[compact.length - 1].toLowerCase() !== word.toLowerCase()) {
+      compact.push(word);
+    }
+  }
+  return compact.join(" ");
+}
+
 function normalizeRagStatus(rawStatus, retrievalSource) {
   const status = (rawStatus || "").toLowerCase();
   const source = (retrievalSource || "").toLowerCase();
@@ -83,6 +96,7 @@ function ChatPage({ onResolved, pushToast }) {
   const [voiceFeedback, setVoiceFeedback] = useState("");
   const recognitionRef = useRef(null);
   const voiceDraftRef = useRef("");
+  const voicePreviewRef = useRef("");
   const [traceExpanded, setTraceExpanded] = useState(() => {
     if (typeof window === "undefined") return false;
     return window.innerWidth >= 1280;
@@ -319,6 +333,8 @@ function ChatPage({ onResolved, pushToast }) {
 
     setVoiceError("");
     setVoiceState("listening");
+    voiceDraftRef.current = "";
+    voicePreviewRef.current = "";
     const recognition = new SpeechRecognition();
     recognitionRef.current = recognition;
     recognition.continuous = false;
@@ -339,10 +355,10 @@ function ChatPage({ onResolved, pushToast }) {
         else interimText += `${t} `;
       }
       if (finalText.trim()) {
-        voiceDraftRef.current = `${voiceDraftRef.current} ${finalText}`.trim();
+        voiceDraftRef.current = sanitizeTranscript(`${voiceDraftRef.current} ${finalText}`);
       }
-      const combined = `${voiceDraftRef.current} ${interimText}`.trim();
-      voiceDraftRef.current = combined;
+      const combined = sanitizeTranscript(`${voiceDraftRef.current} ${interimText}`);
+      voicePreviewRef.current = combined;
       if (!combined) {
         setVoiceState("error");
         setVoiceError("No speech was detected. Please try again.");
@@ -374,7 +390,7 @@ function ChatPage({ onResolved, pushToast }) {
     };
 
     recognition.onend = async () => {
-      const captured = voiceDraftRef.current.trim();
+      const captured = sanitizeTranscript(voiceDraftRef.current || voicePreviewRef.current);
       if (captured) {
         setVoiceState("processing");
         setVoiceFeedback("Processing query...");
@@ -387,6 +403,7 @@ function ChatPage({ onResolved, pushToast }) {
         setVoiceFeedback("");
       }
       voiceDraftRef.current = "";
+      voicePreviewRef.current = "";
       setTimeout(() => {
         setVoiceState((prev) => (prev === "processing" || prev === "detected" ? "idle" : prev));
         setVoiceFeedback((prev) => (prev === "Processing query..." ? "" : prev));
@@ -448,7 +465,7 @@ function ChatPage({ onResolved, pushToast }) {
           suggestions={SUGGESTED}
           onUseSuggestion={(text) => {
             if (isLoading) return;
-            setDraft(text);
+            setDraft("");
             runQuery(text);
           }}
           voiceState={voiceState}
