@@ -14,9 +14,10 @@ const SUGGESTED = [
 const STORAGE_KEY = "bookleaf_chat_histories_v2";
 
 const channelIdentity = {
-  Email: { email: "sara@gmail.com" },
-  WhatsApp: { email: "sara@gmail.com", channel: "whatsapp" },
-  Instagram: { email: "sara@gmail.com", channel: "instagram" }
+  // Use a seeded author identity so operational queries resolve against live DB records.
+  Email: { email: "sara.johnson.0@bookleafauthors.com" },
+  WhatsApp: { email: "sara.johnson.0@bookleafauthors.com", channel: "whatsapp" },
+  Instagram: { email: "sara.johnson.0@bookleafauthors.com", channel: "instagram" }
 };
 
 function withId(message) {
